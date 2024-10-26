@@ -94,7 +94,7 @@ Generate a quiz based on this text. Generate exactly this JSON structure without
     }
   ]
 }
-Create 5 multiple choice questions that test understanding of key concepts.
+Create 8 multiple choice questions that test understanding of key concepts.
 Text to generate quiz from: ${text}`;
 
     const result = await model.generateContent(quizPrompt);

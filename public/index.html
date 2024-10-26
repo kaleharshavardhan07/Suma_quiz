@@ -253,6 +253,7 @@
         document.getElementById('1').classList.remove('notshow');
       } catch (error) {
         console.error('Error:', error);
+        document.getElementById('1').classList.remove('notshow');
         document.getElementById('summaryText').innerHTML = `<span class="error">${error.message}</span>`;
       } finally {
         toggleLoader(false);
@@ -273,6 +274,7 @@
         }
 
         const result = await response.json();
+        document.getElementById('2').classList.remove('notshow');
         document.getElementById('translatedSummaryText').innerText = result.translatedSummary;
       } catch (error) {
         console.error('Error:', error);
@@ -304,6 +306,7 @@
         }
 
         quizData = result.quizData; // Store quiz data
+        document.getElementById('3').classList.remove('notshow');
         displayQuiz(quizData);
       } catch (error) {
         console.error('Error:', error);
