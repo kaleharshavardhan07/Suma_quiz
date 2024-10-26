@@ -1,6 +1,6 @@
 Here’s a README file template for your Node.js application that summarizes, translates, and generates quizzes based on uploaded PDFs or text inputs.
 
-```markdown
+
 # Summa_Quiz
 
 Summa_Quiz is a web application built using Node.js, Express, and Google Generative AI that allows users to upload PDF files or input text for summarization, translation, and quiz generation. This project leverages advanced AI capabilities to provide concise summaries and create quizzes based on the content provided by the user.
