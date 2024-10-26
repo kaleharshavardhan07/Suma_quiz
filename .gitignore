@@ -1,5 +1,5 @@
 # Node modules
-node_modules/
+node_modules
 
 # Other potential entries
 .DS_Store
