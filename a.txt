@@ -1,0 +1,20 @@
+ <div class="card" id="result">
+    <h1>About App</h1>
+    <p>About This App
+      Welcome to Suma_Quiz, your all-in-one tool for efficient content processing! Whether you're working with PDFs or
+      typing in text, this app offers a seamless experience for text analysis and knowledge building. Here’s what you
+      can do with Suma_quiz: </p>
+    <p></p>
+
+    Summarize: Quickly distill lengthy texts into concise summaries, making it easier to grasp the key points.</p>
+    <p>
+      Translate: Translate your summaries into multiple languages, helping you reach a global audience or enhance
+      personal understanding.</p>
+    <p>
+      Quiz Generator: Test your comprehension or create quizzes for others with AI-generated multiple-choice questions
+      based on the content.</p> 
+    <p>
+      With a focus on productivity and accessibility, Suma_Quiz simplifies the way you interact with information.
+      Perfect for students, educators, and professionals alike, [App Name] empowers you to learn and share knowledge
+      effortlessly.</p>
+  </div>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summa_Quiz</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #link{
+      font-size: 1.5rem;
+      color: rgb(25, 195, 225);
+      text-decoration: none;
+      font-weight: bolder;
+
+    }
+    #about{
+
+      background: rgb(255, 254, 254);
+     margin-top: 10px;
+     width: max-content;
+     padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .quiz-question {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+
+    .quiz-option {
+      display: block;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .quiz-option:hover {
+      background-color: #f0f0f0;
+    }
+
+    .quiz-option input[type="radio"] {
+      margin-right: 1rem;
+    }
+
+    .quiz-option.correct {
+      background-color: #e6ffe6;
+      border-left: 4px solid #28a745;
+    }
+
+    .quiz-option.incorrect {
+      background-color: #ffe6e6;
+      border-left: 4px solid #dc3545;
+    }
+
+    .score-summary {
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+    }
+
+    .question-feedback {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 4px;
+    }
+
+    .question-feedback.correct {
+      background-color: #e6ffe6;
+    }
+
+    .question-feedback.incorrect {
+      background-color: #ffe6e6;
+    }
+
+    .error {
+      color: #dc3545;
+      padding: 1rem;
+      border: 1px solid #dc3545;
+      border-radius: 4px;
+      background-color: #ffe6e6;
+      margin: 1rem 0;
+    }
+
+    .notshow {
+      display: none;
+      visibility: hidden;
+
+    }
+
+    #head {
+      font-size: 2 rem;
+      color: rgb(26, 66, 66);
+
+    }
+
+    footer {
+      position: relative;
+
+      bottom: 0px;
+
+      border-radius: 10px;
+      width: 100vw;
+    }
+
+    footer p {
+      padding: 10px;
+
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h1 id="head">Summa_Quiz</h1>
+
+    <div class="card">
+      <form id="textForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="pdfFile">Upload PDF:</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="pdfFile" name="pdfFile" accept="application/pdf">
+            <span class="file-name">No file chosen</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="textInput">Or Enter Text:</label>
+          <textarea id="textInput" name="textInput" rows="5" placeholder="Enter your text here..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="targetLanguage">Translate to:</label>
+          <select id="targetLanguage" name="language">
+            <option value="hi">Hindi</option>
+            <option value="mr">Marathi</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="zh">Chinese</option>
+            <option value="ja">Japanese</option>
+            <option value="ar">Arabic</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+
+        <div class="button-group">
+          <button type="button" id="summarizeBtn" class="btn" aria-label="Summarize text">
+            <span class="btn-icon">📝</span>
+            Summarize
+          </button>
+          <button type="button" id="translateBtn" class="btn" aria-label="Translate summary">
+            <span class="btn-icon">🌐</span>
+            Translate Summary
+          </button>
+          <button type="button" id="quizBtn" class="btn" aria-label="Generate quiz">
+            <span class="btn-icon">📚</span>
+            Generate Quiz
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div id="result" class="results-container">
+      <div id="1" class="result-section">
+        <h2>Summary</h2>
+        <div id="summaryText" class="result-content"></div>
+      </div>
+
+      <div id="2" class="result-section">
+        <h2>Translated Summary</h2>
+        <div id="translatedSummaryText" class="result-content"></div>
+      </div>
+      <div id="3" class="result-section">
+        <h2>Generated Quiz</h2>
+        <form id="quizForm"></form>
+        <button type="button" id="submitQuizBtn" class="btn" aria-label="Submit quiz">
+          <span class="btn-icon">✔️</span> Submit Quiz
+        </button>
+        <div id="quizScore"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div class="loader-container" style="display: none;">
+    <div class="loader"></div>
+    <p class="loading-text">Processing...</p>
+  </div>
+  <a  id="link" href=""><div id = "about"><center>About App </center></div></a>
+ 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    //MAKING JAVA SCRIPT FOR UI 
+    document.getElementById('1').classList.add('notshow');
+
+    document.getElementById('2').classList.add('notshow');
+
+    document.getElementById('3').classList.add('notshow');
+
+    // File input enhancement
+    document.getElementById('pdfFile').addEventListener('change', function (e) {
+      const fileName = e.target.files[0]?.name || 'No file chosen';
+      e.target.parentElement.querySelector('.file-name').textContent = fileName;
+    });
+
+
+    const summarizeBtn = document.getElementById('summarizeBtn');
+    const translateBtn = document.getElementById('translateBtn');
+    const quizbtn = document.getElementById('quizBtn');
+    let currentSummary = '';
+    let textdata = '';
+
+    // Show/hide loader function
+    function toggleLoader(show) {
+      document.querySelector('.loader-container').style.display = show ? 'flex' : 'none';
+    }
+
+    summarizeBtn.onclick = async function () {
+      toggleLoader(true);
+      const textInput = document.getElementById('textInput').value.trim();
+      const pdfFile = document.getElementById('pdfFile').files.length;
+
+      if (!textInput && pdfFile === 0) {
+        alert('Please enter text or upload a PDF file.');
+        toggleLoader(false);
+        return;
+      }
+
+      try {
+        const formData = new FormData(document.getElementById('textForm'));
+
+        const response = await fetch('/summarize', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to summarize text');
+        }
+
+        const result = await response.json();
+        currentSummary = result.summary;
+        const md = window.markdownit();
+        document.getElementById('summaryText').innerHTML = md.render(currentSummary);
+        document.getElementById('1').classList.remove('notshow');
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('summaryText').innerHTML = `<span class="error">${error.message}</span>`;
+      } finally {
+        toggleLoader(false);
+      }
+    };
+
+    translateBtn.onclick = async function () {
+      toggleLoader(true);
+      try {
+        const response = await fetch('/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ summaryText: currentSummary, targetLanguage: document.getElementById('targetLanguage').value })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to translate summary');
+        }
+
+        const result = await response.json();
+        document.getElementById('translatedSummaryText').innerText = result.translatedSummary;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('2').classList.remove('notshow');
+        document.getElementById('translatedSummaryText').innerHTML = `<span class="error">${error.message}</span>`;
+      } finally {
+        toggleLoader(false);
+      }
+    };
+    // Frontend JavaScript code
+    let quizData = []; // Store quiz data globally
+
+    quizBtn.onclick = async function () {
+      toggleLoader(true);
+      try {
+        const formData = new FormData(document.getElementById('textForm'));
+        const response = await fetch('/quizgenerate', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to generate quiz');
+        }
+
+        const result = await response.json();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+
+        quizData = result.quizData; // Store quiz data
+        displayQuiz(quizData);
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('3').classList.remove('notshow');
+        document.getElementById('quizForm').innerHTML =
+          `<div class="error">Error generating quiz: ${error.message}</div>`;
+      } finally {
+        toggleLoader(false);
+      }
+    };
+
+    function displayQuiz(questions) {
+      const quizForm = document.getElementById('quizForm');
+      quizForm.innerHTML = '';
+
+      questions.forEach((question, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'quiz-question';
+
+        // Create question header
+        const questionHeader = document.createElement('h3');
+        questionHeader.textContent = `Question ${index + 1}: ${question.question}`;
+        questionDiv.appendChild(questionHeader);
+
+        // Create options
+        question.options.forEach((option, optionIndex) => {
+          const label = document.createElement('label');
+          label.className = 'quiz-option';
+
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = `question${index}`;
+          input.value = option;
+          input.id = `q${index}o${optionIndex}`;
+
+          const optionText = document.createElement('span');
+          optionText.textContent = option;
+
+          label.appendChild(input);
+          label.appendChild(optionText);
+          questionDiv.appendChild(label);
+        });
+
+        quizForm.appendChild(questionDiv);
+      });
+
+      // Show submit button and reset score
+      document.getElementById('submitQuizBtn').style.display = 'block';
+      document.getElementById('quizScore').textContent = '';
+    }
+
+    document.getElementById('submitQuizBtn').onclick = function () {
+      const quizForm = document.getElementById('quizForm');
+      let score = 0;
+      let totalQuestions = quizData.length;
+      let results = [];
+
+      quizData.forEach((question, index) => {
+        const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+        const isCorrect = selectedOption && selectedOption.value === question.correctAnswer;
+
+        if (isCorrect) {
+          score++;
+        }
+
+        // Highlight correct and incorrect answers
+        const questionDiv = quizForm.children[index];
+        const options = questionDiv.querySelectorAll('.quiz-option');
+
+        options.forEach(option => {
+          const radio = option.querySelector('input');
+          const isSelected = radio.checked;
+          const isCorrectOption = radio.value === question.correctAnswer;
+
+          option.classList.remove('correct', 'incorrect');
+          if (isCorrectOption) {
+            option.classList.add('correct');
+          } else if (isSelected && !isCorrectOption) {
+            option.classList.add('incorrect');
+          }
+        });
+
+        results.push({
+          question: question.question,
+          userAnswer: selectedOption ? selectedOption.value : 'No answer',
+          correctAnswer: question.correctAnswer,
+          isCorrect: isCorrect
+        });
+      });
+
+      // Display score and feedback
+      const scoreDiv = document.getElementById('quizScore');
+      scoreDiv.innerHTML = `
+    <div class="score-summary">
+      <h3>Quiz Results</h3>
+      <p>Score: ${score}/${totalQuestions} (${Math.round(score / totalQuestions * 100)}%)</p>
+      <div class="feedback">
+        ${results.map((result, index) => `
+          <div class="question-feedback ${result.isCorrect ? 'correct' : 'incorrect'}">
+            <p><strong>Question ${index + 1}:</strong> ${result.question}</p>
+            <p>Your answer: ${result.userAnswer}</p>
+            ${!result.isCorrect ? `<p>Correct answer: ${result.correctAnswer}</p>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+    };
+
+  </script>
+  <footer>
+
+    <p>&copy; 2024 Harshavardhan kale . All rights reserved.</p>
+  </footer>
+
+</body>
+
+</html>
